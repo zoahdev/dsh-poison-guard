@@ -1,7 +1,7 @@
 {
   "name": "dsh-poison-guard",
-  "version": "0.1.0",
-  "description": "Pre-install supply-chain scanner for DeepSeek Harness plugins: flag exfiltration, dynamic code execution, install-time scripts, and suspicious network/file behavior before you load a plugin.",
+  "version": "0.2.0",
+  "description": "Pre-install supply-chain poison scanner for DeepSeek Harness plugins: AST analysis (NodeSecure JS-X-Ray) + deobfuscation decoder + regex heuristics to catch credential exfiltration, dynamic code execution, obfuscated imports, and install-time scripts.",
   "type": "module",
   "bin": {
     "dsh-poison-guard": "bin/poison-guard.mjs"
@@ -37,9 +37,21 @@
     "security",
     "supply-chain",
     "audit",
-    "malware"
+    "malware",
+    "sast",
+    "ast",
+    "obfuscation",
+    "js-x-ray"
   ],
   "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zoahdev/dsh-poison-guard.git"
+  },
+  "homepage": "https://github.com/zoahdev/dsh-poison-guard#readme",
   "peerDependencies": {
     "@deepseek-ai/cordis": "^4.0.1",
     "@deepseek-ai/dsh-tools": "^0.1.0-rc.6"
@@ -50,5 +62,8 @@
     "@types/node": "^22.20.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.8"
+  },
+  "dependencies": {
+    "@nodesecure/js-x-ray": "^16.0.0"
   }
 }
