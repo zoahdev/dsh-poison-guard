@@ -3,6 +3,7 @@
 [![CI](https://github.com/zoahdev/dsh-poison-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/zoahdev/dsh-poison-guard/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/badge/release-v0.2.0-58a6ff.svg)](https://github.com/zoahdev/dsh-poison-guard/releases)
+[![npm](https://img.shields.io/npm/v/dsh-poison-guard)](https://www.npmjs.com/package/dsh-poison-guard)
 
 Pre-install supply-chain **poison scanner** for DeepSeek Harness plugins. It is
 not a toy regex grep: it runs three layers on every plugin before you `dsh plugin add` it —
@@ -52,7 +53,10 @@ dsh-poison-guard scan ./some-plugin
 dsh-poison-guard scan ./some-plugin --json
 
 # install into a profile (then the agent gains a `plugin_scan` tool)
-dsh plugin --profile web add github:zoahdev/dsh-poison-guard
+dsh plugin --profile web add dsh-poison-guard
+
+# or as a global CLI
+npm install -g dsh-poison-guard
 ```
 
 Exit code: `0` = CLEAN, `1` = at least one finding (wire it as a CI gate).
