@@ -4,7 +4,7 @@ import { join, relative } from 'node:path'
 import { scanPlugin } from '../lib/index.js'
 
 function usage() {
-  process.stderr.write(`dsh-poison-guard — pre-install supply-chain scanner for DSH plugins
+  process.stderr.write(`dsh-poison-guard - pre-install supply-chain scanner for DSH plugins
 
 Usage:
   dsh-poison-guard scan <plugin-dir> [--json]
@@ -36,7 +36,7 @@ function walk(dir, depth) {
     try {
       files[rel] = readFileSync(full, 'utf8')
     } catch {
-      // binary / unreadable — skip
+      // binary / unreadable - skip
     }
   }
 }
@@ -49,13 +49,14 @@ if (asJson) {
   process.stdout.write(JSON.stringify(report, null, 2) + '\n')
 } else {
   const label = { MALICIOUS: '🔴 MALICIOUS', SUSPICIOUS: '🟡 SUSPICIOUS', CLEAN: '🟢 CLEAN' }[report.verdict]
-  process.stdout.write(`${label}  ${report.summary}\n\n`)
+  const engine = `engine: AST(js-x-ray) + deobfuscation + regex | ${report.stats.sourceFiles} source file(s), ${report.stats.astWarnings} AST warning(s), ${report.stats.deobfuscatedFragments} decoded fragment(s)`
+  process.stdout.write(`${label}  ${report.summary}\n${engine}\n\n`)
   for (const f of report.findings) {
     const sev = { HIGH: 'HIGH ', MEDIUM: 'MED  ', LOW: 'LOW  ' }[f.severity]
     process.stdout.write(`[${sev}] ${f.rule}  ${f.file}:${f.line}\n        ${f.hint}\n`)
   }
   if (report.findings.length === 0) process.stdout.write('(no findings)\n')
-  process.stdout.write(`\n静态扫描≠安全保证；被混淆的恶意代码仍可能绕过。安装前请优先选用有 verified 标记、有维护者、来源明确的插件。\n`)
+  process.stdout.write(`\nStatic analysis is not a security guarantee: obfuscated code can still bypass it.\n安装前请优先选用有 verified 标记、有维护者、来源明确的插件；未验证插件永远别开 danger-full-access。\n`)
 }
 
 process.exit(report.verdict === 'CLEAN' ? 0 : 1)
