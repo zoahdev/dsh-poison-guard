@@ -1,5 +1,9 @@
 # dsh-poison-guard
 
+[![CI](https://github.com/zoahdev/dsh-poison-guard/actions/workflows/ci.yml/badge.svg)](https://github.com/zoahdev/dsh-poison-guard/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/badge/release-v0.2.0-58a6ff.svg)](https://github.com/zoahdev/dsh-poison-guard/releases)
+
 Pre-install supply-chain **poison scanner** for DeepSeek Harness plugins. It is
 not a toy regex grep: it runs three layers on every plugin before you `dsh plugin add` it —
 
