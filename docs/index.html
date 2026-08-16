@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dsh-poison-guard — pre-install poison scanner for DSH plugins</title>
+<style>
+:root{color-scheme:dark;--bg:#0d1117;--surface:#161b22;--ink:#e6edf3;--muted:#8b949e;--line:#30363d;--accent:#3fb950;--bad:#f85149;--warn:#d29922}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:920px;margin:0 auto;padding:48px 20px 80px}
+h1{font-size:34px;letter-spacing:-.02em;margin:0 0 10px}
+.lede{color:var(--muted);font-size:17px;margin:0 0 24px}
+.install{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 34px}
+code{background:var(--surface);border:1px solid var(--line);padding:9px 12px;border-radius:8px;font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.copy{background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 14px;cursor:pointer;font-size:13px}
+.demo{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:0 0 34px}
+@media(max-width:700px){.demo{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.panel h2{margin:0 0 4px;font-size:18px}
+.panel .verdict{font-family:ui-monospace,monospace;font-weight:700;font-size:16px}
+.bad{color:var(--bad)}.good{color:var(--accent)}
+.finding{font-size:13px;border-left:3px solid var(--line);padding:6px 10px;margin:10px 0;background:var(--bg);border-radius:0 8px 8px 0}
+.finding.high{border-color:var(--bad)}.finding .rule{font-family:ui-monospace,monospace;color:var(--bad)}
+table{border-collapse:collapse;width:100%;margin:0 0 24px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.sev{font-weight:700}.sev.HIGH{color:var(--bad)}.sev.MEDIUM{color:var(--warn)}.sev.LOW{color:var(--muted)}
+.note{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:0 10px 10px 0;padding:14px 16px;font-size:14px;color:var(--muted)}
+.links{margin-top:26px;color:var(--muted)}.links a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>dsh-poison-guard</h1>
+  <p class="lede">Pre-install supply-chain poison scanner for DeepSeek Harness plugins — AST (JS-X-Ray) + deobfuscation + regex heuristics, not a toy grep.</p>
+
+  <div class="install">
+    <code>dsh plugin add dsh-poison-guard</code><button class="copy" data-copy="dsh plugin add dsh-poison-guard">Copy</button>
+    <code>npm install -g dsh-poison-guard</code><button class="copy" data-copy="npm install -g dsh-poison-guard">Copy</button>
+  </div>
+
+  <div class="demo">
+    <div class="panel">
+      <h2>Malicious sample</h2>
+      <div class="verdict bad">MALICIOUS</div>
+      <div class="finding high"><span class="rule">install-script/dynamic-eval</span> · package.json<br>"postinstall" runs dynamic code execution</div>
+      <div class="finding high"><span class="rule">ast/unsafe-import</span> · index.js<br>obfuscated / untraceable import</div>
+      <div class="finding high"><span class="rule">exfil-combo</span><br>reads credentials AND makes network requests — the classic exfiltration shape</div>
+      <div class="finding high"><span class="rule">exfil-keys</span> · index.js<br>touches SSH/AWS/GPG private-key paths</div>
+    </div>
+    <div class="panel">
+      <h2>Benign sample</h2>
+      <div class="verdict good">CLEAN</div>
+      <div class="finding">No obvious poisoning signature found.<br>Static scan is not a guarantee.</div>
+      <div class="finding">files: 2 · source files: 1 · AST warnings: 0 · decoded fragments: 0</div>
+    </div>
+  </div>
+
+  <h2>What it detects</h2>
+  <table>
+    <tr><th>Severity</th><th>Examples</th></tr>
+    <tr><td class="sev HIGH">HIGH</td><td>data-exfiltration, unsafe-import, unsafe-stmt (eval/Function/vm), unsafe-command, deobfuscated-secret/key/command, exfil-combo, private-key paths</td></tr>
+    <tr><td class="sev MEDIUM">MEDIUM</td><td>serialize-environment, shady-link, sql-injection, monkey-patch, prototype-pollution, deobfuscated-url, network egress, install-time scripts</td></tr>
+    <tr><td class="sev LOW">LOW</td><td>encoded-literal, short-identifiers, unsafe-regex, weak crypto, env-read, base64 obfuscation</td></tr>
+  </table>
+
+  <div class="note"><strong>Honest threat model:</strong> no static tool catches all poisoning — detecting arbitrary malicious behavior is undecidable (Rice's theorem). This makes the cheap, high-volume attacks visible. The real boundary is the DSH sandbox: keep untrusted plugins in <code>workspace-write</code>, never <code>danger-full-access</code>.</div>
+
+  <p class="links"><a href="https://github.com/zoahdev/dsh-poison-guard">GitHub</a> · <a href="https://www.npmjs.com/package/dsh-poison-guard">npm</a></p>
+</div>
+<script>
+document.querySelectorAll('.copy').forEach(function(b){b.addEventListener('click',function(){navigator.clipboard.writeText(b.dataset.copy).then(function(){var old=b.textContent;b.textContent='Copied';setTimeout(function(){b.textContent=old},1200)})})});
+</script>
+</body>
+</html>
